@@ -194,11 +194,37 @@ pub struct RemoveSecretRequest {
 #[request(method = "_goose/providers/list", response = ListProvidersResponse)]
 pub struct ListProvidersRequest {}
 
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ProviderConfigKey {
+    pub name: String,
+    pub required: bool,
+    pub secret: bool,
+    #[serde(default)]
+    pub oauth_flow: bool,
+    #[serde(default)]
+    pub device_code_flow: bool,
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum ProviderTypeInfo {
+    Preferred,
+    #[default]
+    Builtin,
+    Declarative,
+    Custom,
+}
+
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ProviderListEntry {
     pub id: String,
     pub label: String,
+    pub description: String,
+    pub default_model: String,
+    pub provider_type: ProviderTypeInfo,
+    pub config_keys: Vec<ProviderConfigKey>,
 }
 
 /// Provider list response.

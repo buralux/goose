@@ -136,6 +136,20 @@ export type ListProvidersResponse = {
 export type ProviderListEntry = {
     id: string;
     label: string;
+    description: string;
+    defaultModel: string;
+    providerType: ProviderTypeInfo;
+    configKeys: Array<ProviderConfigKey>;
+};
+
+export type ProviderTypeInfo = 'preferred' | 'builtin' | 'declarative' | 'custom';
+
+export type ProviderConfigKey = {
+    name: string;
+    required: boolean;
+    secret: boolean;
+    oauthFlow?: boolean;
+    deviceCodeFlow?: boolean;
 };
 
 /**

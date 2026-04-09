@@ -254,11 +254,66 @@
         },
         "label": {
           "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "defaultModel": {
+          "type": "string"
+        },
+        "providerType": {
+          "$ref": "#/$defs/ProviderTypeInfo"
+        },
+        "configKeys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProviderConfigKey"
+          }
         }
       },
       "required": [
         "id",
-        "label"
+        "label",
+        "description",
+        "defaultModel",
+        "providerType",
+        "configKeys"
+      ]
+    },
+    "ProviderTypeInfo": {
+      "type": "string",
+      "enum": [
+        "preferred",
+        "builtin",
+        "declarative",
+        "custom"
+      ]
+    },
+    "ProviderConfigKey": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "secret": {
+          "type": "boolean"
+        },
+        "oauthFlow": {
+          "type": "boolean",
+          "default": false
+        },
+        "deviceCodeFlow": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "name",
+        "required",
+        "secret"
       ]
     },
     "ReadConfigRequest": {

@@ -409,13 +409,36 @@ async fn build_model_state(provider: &dyn Provider) -> Result<SessionModelState,
     ))
 }
 
+fn map_provider_type(pt: goose::providers::base::ProviderType) -> ProviderTypeInfo {
+    match pt {
+        goose::providers::base::ProviderType::Preferred => ProviderTypeInfo::Preferred,
+        goose::providers::base::ProviderType::Builtin => ProviderTypeInfo::Builtin,
+        goose::providers::base::ProviderType::Declarative => ProviderTypeInfo::Declarative,
+        goose::providers::base::ProviderType::Custom => ProviderTypeInfo::Custom,
+    }
+}
+
+fn map_config_key(ck: &goose::providers::base::ConfigKey) -> ProviderConfigKey {
+    ProviderConfigKey {
+        name: ck.name.clone(),
+        required: ck.required,
+        secret: ck.secret,
+        oauth_flow: ck.oauth_flow,
+        device_code_flow: ck.device_code_flow,
+    }
+}
+
 async fn list_provider_entries(current_provider: Option<&str>) -> Vec<ProviderListEntry> {
     let mut providers = goose::providers::providers()
         .await
         .into_iter()
-        .map(|(metadata, _)| ProviderListEntry {
+        .map(|(metadata, provider_type)| ProviderListEntry {
             id: metadata.name,
             label: metadata.display_name,
+            description: metadata.description,
+            default_model: metadata.default_model,
+            provider_type: map_provider_type(provider_type),
+            config_keys: metadata.config_keys.iter().map(map_config_key).collect(),
         })
         .collect::<Vec<_>>();
     providers.sort_by(|left, right| left.id.cmp(&right.id));
@@ -430,6 +453,7 @@ async fn list_provider_entries(current_provider: Option<&str>) -> Vec<ProviderLi
             providers.push(ProviderListEntry {
                 id: current_provider.to_string(),
                 label: current_provider.to_string(),
+                ..Default::default()
             });
             providers.sort_by(|left, right| left.id.cmp(&right.id));
         }
@@ -439,6 +463,7 @@ async fn list_provider_entries(current_provider: Option<&str>) -> Vec<ProviderLi
     entries.push(ProviderListEntry {
         id: DEFAULT_PROVIDER_ID.to_string(),
         label: DEFAULT_PROVIDER_LABEL.to_string(),
+        ..Default::default()
     });
     entries.extend(providers);
     entries

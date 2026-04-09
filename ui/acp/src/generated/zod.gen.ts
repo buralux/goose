@@ -113,9 +113,28 @@ export const zUpdateProviderResponse = z.object({
  */
 export const zListProvidersRequest = z.record(z.unknown());
 
+export const zProviderTypeInfo = z.enum([
+    'preferred',
+    'builtin',
+    'declarative',
+    'custom'
+]);
+
+export const zProviderConfigKey = z.object({
+    name: z.string(),
+    required: z.boolean(),
+    secret: z.boolean(),
+    oauthFlow: z.boolean().optional().default(false),
+    deviceCodeFlow: z.boolean().optional().default(false)
+});
+
 export const zProviderListEntry = z.object({
     id: z.string(),
-    label: z.string()
+    label: z.string(),
+    description: z.string(),
+    defaultModel: z.string(),
+    providerType: zProviderTypeInfo,
+    configKeys: z.array(zProviderConfigKey)
 });
 
 /**
